@@ -18,8 +18,6 @@
  */
 
     var sd = ""
-    var map;
-
     // Application Constructor
     function onLoad() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -94,9 +92,6 @@ function logout() {
     
 }
 
-function maps() {
-    window.location.href = "delete.html"
-}
 //     <h1>Apache Cordova</h1>
 // <div id="deviceready" class="blink">
 //     <p class="event listening">Connecting to Device</p>
