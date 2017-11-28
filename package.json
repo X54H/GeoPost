@@ -13,12 +13,14 @@
     "android-versions": "^1.2.1",
     "cordova-android": "^6.4.0",
     "cordova-ios": "^4.5.4",
+    "cordova-plugin-console": "^1.1.0",
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git",
     "cordova-plugin-whitelist": "^1.3.3"
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "cordova-plugin-console": {}
     },
     "platforms": [
       "ios",

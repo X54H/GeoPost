@@ -46,8 +46,12 @@
     }
 
 function login () {
-    username = $("#inputUsername").val();
-    password = $("#inputPassword").val();
+    // username = $("#inputUsername").val();
+    // password = $("#inputPassword").val();
+    username = "giuse";
+    password = "bigs123qwert";
+    console.log(username)
+    console.log(password)
     $.ajax({
         type: "POST",
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -56,19 +60,23 @@ function login () {
             'username': username,
             'password': password
         },
+        error: function(xhr, textStatus, error){
+            console.log(xhr.statusText);
+            console.log(textStatus);
+            console.log(error);
+        },
         success: function(session_id){
             sd = session_id
-            output = ""
-            $("#dynamicBody").load("amiciSeguiti.html", function () {
-                $.ajax({
-                    url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + session_id,
-                    success: function (result) {
-                        result.followed.forEach(function (item, index) {
-                            this.output += "<li class=\"list-group-item\">"+ item.username +"</li>";
-                        })
-                        followedFriends(output)
-                    }
-                })
+            console.log(session_id);
+        output = ""
+            $.ajax({
+                url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + session_id,
+                success: function (result) {
+                    result.followed.forEach(function (item, index) {
+                        this.output += "<li class=\"list-group-item\">"+ item.username +"</li>";
+                    })
+                    followedFriends(output)
+                }
             })
         }
     });
@@ -76,9 +84,44 @@ function login () {
 
 function followedFriends(output) {
     $("nav").show()
-    $("#dynamicBody").html(output);
-    console.log("ciao iOS!")
+    $("#dynamicBody").load("followedFriends.html", function () {
+        $("#mappa").hide();
+        $("#amici").html(output);
 
+        $("#bottone_lista").click(function() {
+            $("#bottone_mappa").removeClass("btn-primary").addClass("btn-default");
+            $("#bottone_lista").removeClass("btn-default").addClass("btn-primary");
+            $("#mappa").hide();
+            $("#lista").show();
+        });
+
+        $("#bottone_mappa").click(function() {
+            $("#bottone_lista").removeClass("btn-primary").addClass("btn-default");
+            $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
+            $("#lista").hide();
+            $("#mappa").show();
+            google.maps.event.trigger(map, 'resize');
+
+        });
+        $.getScript( "https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZtpQ-rvXhNSqPEgc8957A07yL11Ya4w&callback=initMap",
+            function () {
+                initMap();
+            });
+
+    })
+}
+
+function initMap() {
+
+    var uluru = {lat: -25.363, lng: 131.044};
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 4,
+        center: uluru
+    });
+    var marker = new google.maps.Marker({
+        position: uluru,
+        map: map
+    });
 }
 
 function logout() {

@@ -14,16 +14,13 @@
             }
           ]
         }
-      },
-      "AndroidManifest.xml": {
-        "parents": {
-          "/manifest/application": [],
-          "/manifest": []
-        }
       }
     }
   },
   "installed_plugins": {
+    "cordova-plugin-console": {
+      "PACKAGE_NAME": "io.cordova.hellocordova"
+    },
     "cordova-plugin-whitelist": {
       "PACKAGE_NAME": "io.cordova.hellocordova"
     }
@@ -31,6 +28,7 @@
   "dependent_plugins": {},
   "modules": [],
   "plugin_metadata": {
+    "cordova-plugin-console": "1.1.0",
     "cordova-plugin-whitelist": "1.3.3"
   }
 }
