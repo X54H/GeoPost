@@ -1,57 +1,81 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+* Licensed to the Apache Software Foundation (ASF) under one
+* or more contributor license agreements.  See the NOTICE file
+* distributed with this work for additional information
+* regarding copyright ownership.  The ASF licenses this file
+* to you under the Apache License, Version 2.0 (the
+* "License"); you may not use this file except in compliance
+* with the License.  You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
 
-    var sd = ""
-    // Application Constructor
-    function onLoad() {
-        document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+
+people = []
+
+function Person(first, age, post, lat, long) {
+    this.username = username;
+    this.msg = post
+    this.position = {'lat' : lat,  'long' : long}
+}
+
+var Singleton = (function () {
+    var instance;
+
+    function createInstance(username, session_id, position) {
+        return Object.create(Person);
+
     }
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
-    function onDeviceReady() {
-        this.receivedEvent('deviceready');
-        document.addEventListener('pause', this.onPause.bind(this), false)
+    return {
+        getInstance: function () {
+            if (!instance) {
+                instance = createInstance();
+            }
+            return instance;
+        }
+    };
+})();
 
-    }
 
-    function onPause () {
+function onLoad() {
+    document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+}
+
+
+function onDeviceReady() {
+    this.receivedEvent('deviceready');
+    document.addEventListener('pause', this.onPause.bind(this), false)
+}
+
+
+function onPause () {
         console.log("pausaaa")
     }
 
+// Update DOM on a Received Event
+function receivedEvent(id) {
+    console.log(id)
+    $("#sub").click(function () {
+        login()
+    })
+}
 
-    // Update DOM on a Received Event
-    function receivedEvent(id) {
-        $("#sub").click(function () {
-            login()
-        })
-    }
 
 function login () {
     // username = $("#inputUsername").val();
     // password = $("#inputPassword").val();
-    username = "giuse";
-    password = "bigs123qwert";
-    console.log(username)
-    console.log(password)
+    var username = "giuse";
+    var password = "bigs123qwert";
+    console.log(username);
+    console.log(password);
     $.ajax({
         type: "POST",
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -66,35 +90,39 @@ function login () {
             console.log(error);
         },
         success: function(session_id){
-            sd = session_id
             console.log(session_id);
-        output = ""
-            $.ajax({
-                url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + session_id,
-                success: function (result) {
-                    result.followed.forEach(function (item, index) {
-                        this.output += "<li class=\"list-group-item\">"+ item.username +"</li>";
-                    })
-                    followedFriends(output)
-                }
-            })
+            Singleton.getInstance().username = username
+            Singleton.getInstance().session_id = session_id
+            loadPeople();
         }
     });
 }
 
-function followedFriends(output) {
+function loadPeople() {
+    $.ajax({
+        url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + Singleton.getInstance().session_id,
+        success: function (result) {
+                people = result.followed;
+                showAmiciSeguitiScreen()
+        }
+    })
+}
+
+function showAmiciSeguitiScreen() {
+    output = ""
     $("nav").show()
     $("#dynamicBody").load("followedFriends.html", function () {
+            people.forEach(function (item, index) {
+                output += "<li class=\"list-group-item\">"+ item.username +"</li>";
+                $("#amici").html(output);
+        })
         $("#mappa").hide();
-        $("#amici").html(output);
-
         $("#bottone_lista").click(function() {
             $("#bottone_mappa").removeClass("btn-primary").addClass("btn-default");
             $("#bottone_lista").removeClass("btn-default").addClass("btn-primary");
             $("#mappa").hide();
             $("#lista").show();
         });
-
         $("#bottone_mappa").click(function() {
             $("#bottone_lista").removeClass("btn-primary").addClass("btn-default");
             $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
@@ -105,35 +133,75 @@ function followedFriends(output) {
         });
         $.getScript( "https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZtpQ-rvXhNSqPEgc8957A07yL11Ya4w&callback=initMap",
             function () {
-                initMap();
+                console.log("geoWorks?")
+                getMapLocation()
             });
 
     })
 }
 
-function initMap() {
+function getMapLocation() {
+    var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
+    navigator.geolocation.getCurrentPosition
+    (gpsSuccess, gpsError, gpsOptions);
+}
 
-    var uluru = {lat: -25.363, lng: 131.044};
+function gpsRetry(gpsOptions) {
+    navigator.geolocation.getCurrentPosition(gpsSuccess, gpsError, gpsOptions);
+}
+
+// onError Callback receives a PositionError object
+//
+function gpsError(error, gpsOptions) {
+    alert('code: '    + error.code    + "\n" +
+        'message: ' + error.message + "\n" +
+        "Attiva la geolocalizzazione per usare al meglio la tua app!");
+    gpsRetry(gpsOptions);
+}
+
+function gpsSuccess(position) {
+    Singleton.getInstance().position = position
+    initMap(position);
+}
+
+
+function initMap(pos) {
+    var uluru = {lat: pos.coords.latitude, lng: pos.coords.longitude};
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 4,
         center: uluru
     });
+    var contentString = 'Bella Raga!'
+
+    var infowindow = new google.maps.InfoWindow({
+        content: contentString
+    });
     var marker = new google.maps.Marker({
         position: uluru,
-        map: map
+        map: map,
+        title: 'Post'
+    });
+    marker.addListener('click', function() {
+        infowindow.open(map, marker);
     });
 }
 
 function logout() {
     $.ajax({
-        url: "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id=" + sd,
+        url: "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id=" + Singleton.getInstance().session_id,
         success: function (result) {
             console.log("logout eseguito!");
             window.location.href = "index.html"
         }
     })
-    
 }
+
+function watchMapPosition() {
+    return navigator.geolocation.watchPosition
+    (onMapWatchSuccess, onMapError, { enableHighAccuracy: true });
+}
+
+
 
 //     <h1>Apache Cordova</h1>
 // <div id="deviceready" class="blink">

@@ -12,19 +12,25 @@
   "dependencies": {
     "android-versions": "^1.2.1",
     "cordova-android": "^6.4.0",
+    "cordova-browser": "^5.0.1",
     "cordova-ios": "^4.5.4",
     "cordova-plugin-console": "^1.1.0",
+    "cordova-plugin-geolocation": "^3.0.0",
     "cordova-plugin-googlemaps-sdk": "git+https://github.com/mapsplugin/cordova-plugin-googlemaps-sdk.git",
     "cordova-plugin-whitelist": "^1.3.3"
   },
   "cordova": {
     "plugins": {
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-console": {}
+      "cordova-plugin-console": {},
+      "cordova-plugin-geolocation": {
+        "GEOLOCATION_USAGE_DESCRIPTION": "GeoPost need you position"
+      }
     },
     "platforms": [
+      "android",
       "ios",
-      "android"
+      "browser"
     ]
   }
 }
