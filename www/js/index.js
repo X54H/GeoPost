@@ -18,12 +18,17 @@
 */
 
 
-people = []
+var people = []
 
-function Person(first, age, post, lat, long) {
+function Person(username, msg, lat, lon) {
     this.username = username;
-    this.msg = post
-    this.position = {'lat' : lat,  'long' : long}
+    this.msg = msg
+    this.position = {'lat' : Number(lat),  'lon' : Number(lon)}
+}
+
+function addPerson(person){
+    var p = new Person(person.username, person.msg, person.lat, person.lon); // here we create instance
+    people.push(p);
 }
 
 var Singleton = (function () {
@@ -102,18 +107,20 @@ function loadPeople() {
     $.ajax({
         url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + Singleton.getInstance().session_id,
         success: function (result) {
-                people = result.followed;
-                showAmiciSeguitiScreen()
+                var people = result.followed;
+                showAmiciSeguitiScreen(people)
         }
     })
 }
 
-function showAmiciSeguitiScreen() {
+
+function showAmiciSeguitiScreen(people) {
     output = ""
     $("nav").show()
     $("#dynamicBody").load("followedFriends.html", function () {
-            people.forEach(function (item, index) {
-                output += "<li class=\"list-group-item\">"+ item.username +"</li>";
+            people.forEach(function (person, index) {
+                addPerson(person)
+                output += "<li class=\"list-group-item\">"+ person.username +"</li>";
                 $("#amici").html(output);
         })
         $("#mappa").hide();
@@ -166,24 +173,29 @@ function gpsSuccess(position) {
 
 
 function initMap(pos) {
-    var uluru = {lat: pos.coords.latitude, lng: pos.coords.longitude};
+    var infowindow = new google.maps.InfoWindow();
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 4,
-        center: uluru
-    });
-    var contentString = 'Bella Raga!'
+        center:{lat: pos.coords.latitude, lng: pos.coords.longitude}
 
-    var infowindow = new google.maps.InfoWindow({
-        content: contentString
     });
-    var marker = new google.maps.Marker({
-        position: uluru,
-        map: map,
-        title: 'Post'
-    });
-    marker.addListener('click', function() {
-        infowindow.open(map, marker);
-    });
+    function placeMarker(person) {
+        //TODO Inserire la propria posizione. Verificare che la posizione non sia NUL.
+        //TODO Aggiornare i valori degli amici
+        var latLng = new google.maps.LatLng(person.position.lat, person.position.lon);
+        var marker = new google.maps.Marker({
+            position : latLng,
+            map : map
+        })
+        google.maps.event.addListener(marker, 'click', function(){
+            infowindow.close(); // Close previously opened infowindow
+            infowindow.setContent( "<div id='infowindow'>"+ person.msg +"</div>");
+            infowindow.open(map, marker);
+        });
+    }
+    for(var i=0; i < people.length; i++) {
+        placeMarker(people[i])
+    }
 }
 
 function logout() {
