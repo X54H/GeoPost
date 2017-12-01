@@ -17,6 +17,7 @@
 * under the License.
 */
 
+//TODO Aggiungere Scroll View
 
 var people = []
 
@@ -67,7 +68,8 @@ function onPause () {
 
 // Update DOM on a Received Event
 function receivedEvent(id) {
-    console.log(id)
+    console.log(id);
+    //TODO Bug doppio click da risolvere.
     $("#sub").click(function () {
         login()
     })
@@ -116,6 +118,7 @@ function loadPeople() {
 
 function showAmiciSeguitiScreen(people) {
     output = ""
+    $("#back").hide();
     $("nav").show()
     $("#dynamicBody").load("followedFriends.html", function () {
             people.forEach(function (person, index) {
@@ -140,8 +143,8 @@ function showAmiciSeguitiScreen(people) {
         });
         $.getScript( "https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZtpQ-rvXhNSqPEgc8957A07yL11Ya4w&callback=initMap",
             function () {
-                console.log("geoWorks?")
                 getMapLocation()
+                console.log("geoWorks?")
             });
 
     })
@@ -167,7 +170,7 @@ function gpsError(error, gpsOptions) {
 }
 
 function gpsSuccess(position) {
-    Singleton.getInstance().position = position
+    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
     initMap(position);
 }
 
@@ -177,7 +180,6 @@ function initMap(pos) {
     var map = new google.maps.Map(document.getElementById('map'), {
         zoom: 4,
         center:{lat: pos.coords.latitude, lng: pos.coords.longitude}
-
     });
     function placeMarker(person) {
         //TODO Inserire la propria posizione. Verificare che la posizione non sia NUL.
@@ -193,9 +195,15 @@ function initMap(pos) {
             infowindow.open(map, marker);
         });
     }
+    console.log(Singleton.getInstance().username)
+    console.log(Singleton.getInstance().position);
+    console.log(Singleton.getInstance().session_id);
+    placeMarker(Singleton.getInstance());
+
     for(var i=0; i < people.length; i++) {
         placeMarker(people[i])
     }
+
 }
 
 function logout() {
@@ -214,6 +222,26 @@ function watchMapPosition() {
 }
 
 
+function postMessage() {
+    $("#dynamicBody").load("postMessage.html", function () {
+        $("#back").show();
+        $("#submitPost").click(function () {
+            var msg = $("#post").val();
+            $.ajax({
+                url: "https://ewserver.di.unimi.it/mobicomp/geopost/status_update?session_id="
+                + Singleton.getInstance().session_id + "&message=" + msg + "&lat=" + Singleton.getInstance().position.lat
+                + "&lon=" + Singleton.getInstance().position.lon,
+
+                success: function (result) {
+                    console.log("Messaggio postato! with resul=" + result);
+                    console.log(" " + msg)
+                    Singleton.getInstance().msg = msg;
+                    alert("Your state is updated! Thank you!")
+                }
+            })
+        })
+    })
+}
 
 //     <h1>Apache Cordova</h1>
 // <div id="deviceready" class="blink">
