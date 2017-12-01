@@ -20,6 +20,7 @@
 //TODO Aggiungere Scroll View
 
 var people = []
+var map
 
 function Person(username, msg, lat, lon) {
     this.username = username;
@@ -70,7 +71,7 @@ function onPause () {
 function receivedEvent(id) {
     console.log(id);
     //TODO Bug doppio click da risolvere.
-    $("#sub").click(function () {
+    $("#sub").one("click", function () {
         login()
     })
 }
@@ -81,7 +82,7 @@ function login () {
     // password = $("#inputPassword").val();
     var username = "giuse";
     var password = "bigs123qwert";
-    console.log(username);
+    console.log(username);2
     console.log(password);
     $.ajax({
         type: "POST",
@@ -98,8 +99,11 @@ function login () {
         },
         success: function(session_id){
             console.log(session_id);
-            Singleton.getInstance().username = username
-            Singleton.getInstance().session_id = session_id
+            console.log(Singleton.getInstance().username);
+            console.log(Singleton.getInstance().position);
+            console.log(Singleton.getInstance().username = username);
+            console.log(Singleton.getInstance().session_id = session_id);
+            console.log(Singleton.getInstance().position = null);
             loadPeople();
         }
     });
@@ -110,7 +114,7 @@ function loadPeople() {
         url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + Singleton.getInstance().session_id,
         success: function (result) {
                 var people = result.followed;
-                showAmiciSeguitiScreen(people)
+                showAmiciSeguitiScreen(people);
         }
     })
 }
@@ -121,10 +125,10 @@ function showAmiciSeguitiScreen(people) {
     $("#back").hide();
     $("nav").show()
     $("#dynamicBody").load("followedFriends.html", function () {
-            people.forEach(function (person, index) {
-                addPerson(person)
-                output += "<li class=\"list-group-item\">"+ person.username +"</li>";
-                $("#amici").html(output);
+        people.forEach(function (person, index) {
+            addPerson(person)
+            output += "<li class=\"list-group-item\">"+ person.username +"</li>";
+            $("#amici").html(output);
         })
         $("#mappa").hide();
         $("#bottone_lista").click(function() {
@@ -138,17 +142,13 @@ function showAmiciSeguitiScreen(people) {
             $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
             $("#lista").hide();
             $("#mappa").show();
+            initMap();
             google.maps.event.trigger(map, 'resize');
-
         });
-        $.getScript( "https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZtpQ-rvXhNSqPEgc8957A07yL11Ya4w&callback=initMap",
-            function () {
-                getMapLocation()
-                console.log("geoWorks?")
-            });
-
     })
 }
+
+get
 
 function getMapLocation() {
     var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
@@ -171,6 +171,7 @@ function gpsError(error, gpsOptions) {
 
 function gpsSuccess(position) {
     Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
+    console.log("gps success!!")
     initMap(position);
 }
 
@@ -178,26 +179,13 @@ function gpsSuccess(position) {
 function initMap(pos) {
     var infowindow = new google.maps.InfoWindow();
     var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 4,
-        center:{lat: pos.coords.latitude, lng: pos.coords.longitude}
+        zoom: 6,
+        center:{lat: 45, lng: 9}
     });
-    function placeMarker(person) {
-        //TODO Inserire la propria posizione. Verificare che la posizione non sia NUL.
-        //TODO Aggiornare i valori degli amici
-        var latLng = new google.maps.LatLng(person.position.lat, person.position.lon);
-        var marker = new google.maps.Marker({
-            position : latLng,
-            map : map
-        })
-        google.maps.event.addListener(marker, 'click', function(){
-            infowindow.close(); // Close previously opened infowindow
-            infowindow.setContent( "<div id='infowindow'>"+ person.msg +"</div>");
-            infowindow.open(map, marker);
-        });
-    }
     console.log(Singleton.getInstance().username)
     console.log(Singleton.getInstance().position);
     console.log(Singleton.getInstance().session_id);
+
     placeMarker(Singleton.getInstance());
 
     for(var i=0; i < people.length; i++) {
