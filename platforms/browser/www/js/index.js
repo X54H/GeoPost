@@ -17,48 +17,23 @@
 * under the License.
 */
 
-var sd = "";
+//TODO Aggiungere Scroll View
 
-function Person(first, last, age, eye, post, position) {
-    this.firstName = first;
-    this.lastName = last;
-    this.age = age;
-    this.eyeColor = eye;
-    this.post = post
-    this.position
-    this.name = function() {
-        return this.firstName + " " + this.lastName
-    };
+var people = []
+var map;
+
+
+function Person(username, msg, lat, lon) {
+    this.username = username;
+    this.msg = msg
+    this.position = {'lat' : Number(lat),  'lon' : Number(lon)}
 }
 
-var Singleton = (function () {
-    var instance;
-
-    function createInstance() {
-        var myProfile = new Person("Giuseppe", "Carnà", 26, "Hey!",123);
-        return myProfile;
-    }
-
-    return {
-        getInstance: function () {
-            if (!instance) {
-                instance = createInstance();
-            }
-            return instance;
-        }
-    };
-})();
-
-console.log(Singleton.getInstance().name());
-// Application Constructor
 function onLoad() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
 }
 
-// deviceready Event Handler
-//
-// Bind any cordova events here. Common events are:
-// 'pause', 'resume', etc.
+
 function onDeviceReady() {
     this.receivedEvent('deviceready');
     document.addEventListener('pause', this.onPause.bind(this), false)
@@ -71,7 +46,9 @@ function onPause () {
 
 // Update DOM on a Received Event
 function receivedEvent(id) {
-    $("#sub").click(function () {
+    console.log(id);
+    //TODO Bug doppio click da risolvere.
+    $("#sub").one("click", function () {
         login()
     })
 }
@@ -80,10 +57,10 @@ function receivedEvent(id) {
 function login () {
     // username = $("#inputUsername").val();
     // password = $("#inputPassword").val();
-    username = "giuse";
-    password = "bigs123qwert";
-    console.log(username)
-    console.log(password)
+    var username = "giuse";
+    var password = "bigs123qwert";
+    console.log(username);2
+    console.log(password);
     $.ajax({
         type: "POST",
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -98,51 +75,66 @@ function login () {
             console.log(error);
         },
         success: function(session_id){
-            sd = session_id
             console.log(session_id);
-        output = ""
-            $.ajax({
-                url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + session_id,
-                success: function (result) {
-                    result.followed.forEach(function (item, index) {
-                        this.output += "<li class=\"list-group-item\">"+ item.username +"</li>";
-                    })
-                    followedFriends(output)
-                }
-            })
+            console.log(Singleton.getInstance().username);
+            console.log(Singleton.getInstance().position);
+            console.log(Singleton.getInstance().username = username);
+            console.log(Singleton.getInstance().session_id = session_id);
+            console.log(Singleton.getInstance().position = null);
+            loadPeople();
         }
     });
 }
 
-function followedFriends(output) {
-    $("nav").show()
-    $("#dynamicBody").load("followedFriends.html", function () {
-        $("#mappa").hide();
-        $("#amici").html(output);
+function loadPeople() {
+    $.ajax({
+        url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + Singleton.getInstance().session_id,
+        success: function (result) {
+                var people = result.followed;
+                showAmiciSeguitiScreen(people);
+        }
+    })
+}
 
+
+function showAmiciSeguitiScreen(people) {
+    var riga = "";
+    $("#back").hide();
+    $("nav").show()
+    $("#dynamicBody").load("html/followedFriends.html", function () {
+        var a = '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">';
+        var d = '<div class="d-flex w-100 justify-content-between">';
+        people.forEach(function (person, index) {
+            addPerson(person);
+            riga += a + d;
+            riga += '<h5 class="mb-1">' + person.username + '</h5>';
+            riga += '</div>';
+            if (person.msg != null) riga += '<p class="mb-1">' + person.msg + '</p>';
+            riga += '<small style="position: absolute;\n' +
+                'top: 12px;\n' +
+                'right: 16px;">15 km</small>'
+            riga += '</a>'
+
+        })
+        $(".list-group").html(riga);
+        $("#mappa").hide();
         $("#bottone_lista").click(function() {
             $("#bottone_mappa").removeClass("btn-primary").addClass("btn-default");
             $("#bottone_lista").removeClass("btn-default").addClass("btn-primary");
             $("#mappa").hide();
             $("#lista").show();
         });
-
         $("#bottone_mappa").click(function() {
             $("#bottone_lista").removeClass("btn-primary").addClass("btn-default");
             $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
             $("#lista").hide();
             $("#mappa").show();
             google.maps.event.trigger(map, 'resize');
-
         });
-        $.getScript( "https://maps.googleapis.com/maps/api/js?key=AIzaSyBZZtpQ-rvXhNSqPEgc8957A07yL11Ya4w&callback=initMap",
-            function () {
-                console.log("geoWorks?")
-                getMapLocation()
-            });
-
+        initMap();
     })
 }
+
 
 function getMapLocation() {
     var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
@@ -158,66 +150,72 @@ function gpsRetry(gpsOptions) {
 //
 function gpsError(error, gpsOptions) {
     alert('code: '    + error.code    + "\n" +
-        'message: ' + error.message + "\n");
+        'message: ' + error.message + "\n" +
+        "Attiva la geolocalizzazione per usare al meglio la tua app!");
     gpsRetry(gpsOptions);
-
 }
 
 function gpsSuccess(position) {
+    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
+    console.log("gps success!!")
     initMap(position);
-
 }
 
 
 function initMap(pos) {
-
-    var uluru = {lat: 49, lng: 40};
-
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 4,
-        center: uluru
+    var infowindow = new google.maps.InfoWindow();
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 6,
+        center:{lat: 45, lng: 9}
     });
-    var contentString = '<div id="content">'+
-        '<div id="siteNotice">'+
-        '</div>'+
-        '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-        '<div id="bodyContent">'+
-        '<p>Bella Raga!</p>'+
-        '</div>'+
-        '</div>';
+    console.log(Singleton.getInstance().username)
+    console.log(Singleton.getInstance().position);
+    console.log(Singleton.getInstance().session_id);
 
-    var infowindow = new google.maps.InfoWindow({
-        content: contentString
-    });
+    placeMarker(Singleton.getInstance());
 
-    var marker = new google.maps.Marker({
-        position: uluru,
-        map: map,
-        title: 'Post'
-    });
-    marker.addListener('click', function() {
-        infowindow.open(map, marker);
-    });
+    for(var i=0; i < people.length; i++) {
+        placeMarker(people[i])
+    }
+
 }
 
 function logout() {
     $.ajax({
-        url: "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id=" + sd,
+        url: "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id=" + Singleton.getInstance().session_id,
         success: function (result) {
             console.log("logout eseguito!");
             window.location.href = "index.html"
         }
     })
-
 }
 
 function watchMapPosition() {
-
     return navigator.geolocation.watchPosition
     (onMapWatchSuccess, onMapError, { enableHighAccuracy: true });
 }
 
 
+function postMessage() {
+    $("#dynamicBody").load("postMessage.html", function () {
+        $("#back").show();
+        $("#submitPost").click(function () {
+            var msg = $("#post").val();
+            $.ajax({
+                url: "https://ewserver.di.unimi.it/mobicomp/geopost/status_update?session_id="
+                + Singleton.getInstance().session_id + "&message=" + msg + "&lat=" + Singleton.getInstance().position.lat
+                + "&lon=" + Singleton.getInstance().position.lon,
+
+                success: function (result) {
+                    console.log("Messaggio postato! with resul=" + result);
+                    console.log(" " + msg)
+                    Singleton.getInstance().msg = msg;
+                    alert("Your state is updated! Thank you!")
+                }
+            })
+        })
+    })
+}
 
 //     <h1>Apache Cordova</h1>
 // <div id="deviceready" class="blink">

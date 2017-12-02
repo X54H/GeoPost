@@ -18,16 +18,7 @@
 */
 
 //TODO Aggiungere Scroll View
-
-var people = []
-var map;
-
-
-function Person(username, msg, lat, lon) {
-    this.username = username;
-    this.msg = msg
-    this.position = {'lat' : Number(lat),  'lon' : Number(lon)}
-}
+//TODO Modificare l'interfaccia grafica
 
 function onLoad() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -73,6 +64,7 @@ function login () {
             console.log(xhr.statusText);
             console.log(textStatus);
             console.log(error);
+
         },
         success: function(session_id){
             console.log(session_id);
@@ -136,57 +128,6 @@ function showAmiciSeguitiScreen(people) {
 }
 
 
-function getMapLocation() {
-    var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
-    navigator.geolocation.getCurrentPosition
-    (gpsSuccess, gpsError, gpsOptions);
-}
-
-function gpsRetry(gpsOptions) {
-    navigator.geolocation.getCurrentPosition(gpsSuccess, gpsError, gpsOptions);
-}
-
-// onError Callback receives a PositionError object
-//
-function gpsError(error, gpsOptions) {
-    alert('code: '    + error.code    + "\n" +
-        'message: ' + error.message + "\n" +
-        "Attiva la geolocalizzazione per usare al meglio la tua app!");
-    gpsRetry(gpsOptions);
-}
-
-function gpsSuccess(position) {
-    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
-    console.log("gps success!!")
-}
-
-function placeMarker(person) {
-    //TODO Inserire la propria posizione. Verificare che la posizione non sia NUL.
-    //TODO Aggiornare i valori degli amici
-    var latLng = new google.maps.LatLng(person.position.lat, person.position.lon);
-    var marker = new google.maps.Marker({
-        position: latLng,
-        map: map
-    })
-}
-
-function initMap(pos) {
-    var infowindow = new google.maps.InfoWindow();
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 6,
-        center:{lat: 45, lng: 9}
-    });
-    console.log(Singleton.getInstance().username)
-    console.log(Singleton.getInstance().position);
-    console.log(Singleton.getInstance().session_id);
-
-    // placeMarker(Singleton.getInstance());
-
-    for(var i=0; i < people.length; i++) {
-        placeMarker(people[i])
-    }
-
-}
 
 function logout() {
     $.ajax({
@@ -196,11 +137,6 @@ function logout() {
             window.location.href = "index.html"
         }
     })
-}
-
-function watchMapPosition() {
-    return navigator.geolocation.watchPosition
-    (onMapWatchSuccess, onMapError, { enableHighAccuracy: true });
 }
 
 
@@ -225,9 +161,3 @@ function postMessage() {
         })
     })
 }
-
-//     <h1>Apache Cordova</h1>
-// <div id="deviceready" class="blink">
-//     <p class="event listening">Connecting to Device</p>
-// <p class="event received">Device is Ready</p>
-// </div>
