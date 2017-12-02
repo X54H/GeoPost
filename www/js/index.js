@@ -20,37 +20,14 @@
 //TODO Aggiungere Scroll View
 
 var people = []
-var map
+var map;
+
 
 function Person(username, msg, lat, lon) {
     this.username = username;
     this.msg = msg
     this.position = {'lat' : Number(lat),  'lon' : Number(lon)}
 }
-
-function addPerson(person){
-    var p = new Person(person.username, person.msg, person.lat, person.lon); // here we create instance
-    people.push(p);
-}
-
-var Singleton = (function () {
-    var instance;
-
-    function createInstance(username, session_id, position) {
-        return Object.create(Person);
-
-    }
-
-    return {
-        getInstance: function () {
-            if (!instance) {
-                instance = createInstance();
-            }
-            return instance;
-        }
-    };
-})();
-
 
 function onLoad() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -78,10 +55,10 @@ function receivedEvent(id) {
 
 
 function login () {
-    // username = $("#inputUsername").val();
-    // password = $("#inputPassword").val();
-    var username = "giuse";
-    var password = "bigs123qwert";
+    username = $("#inputUsername").val();
+    password = $("#inputPassword").val();
+    // var username = "giuse";
+    // var password = "bigs123qwert";
     console.log(username);2
     console.log(password);
     $.ajax({
@@ -121,15 +98,25 @@ function loadPeople() {
 
 
 function showAmiciSeguitiScreen(people) {
-    output = ""
+    var riga = "";
     $("#back").hide();
     $("nav").show()
-    $("#dynamicBody").load("followedFriends.html", function () {
+    $("#dynamicBody").load("html/followedFriends.html", function () {
+        var a = '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">';
+        var d = '<div class="d-flex w-100 justify-content-between">';
         people.forEach(function (person, index) {
-            addPerson(person)
-            output += "<li class=\"list-group-item\">"+ person.username +"</li>";
-            $("#amici").html(output);
+            addPerson(person);
+            riga += a + d;
+            riga += '<h5 class="mb-1">' + person.username + '</h5>';
+            riga += '</div>';
+            if (person.msg != null) riga += '<p class="mb-1">' + person.msg + '</p>';
+            riga += '<small style="position: absolute;\n' +
+                'top: 12px;\n' +
+                'right: 16px;">15 km</small>'
+            riga += '</a>'
+
         })
+        $(".list-group").html(riga);
         $("#mappa").hide();
         $("#bottone_lista").click(function() {
             $("#bottone_mappa").removeClass("btn-primary").addClass("btn-default");
@@ -142,13 +129,12 @@ function showAmiciSeguitiScreen(people) {
             $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
             $("#lista").hide();
             $("#mappa").show();
-            initMap();
             google.maps.event.trigger(map, 'resize');
         });
+        initMap();
     })
 }
 
-get
 
 function getMapLocation() {
     var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
@@ -172,13 +158,21 @@ function gpsError(error, gpsOptions) {
 function gpsSuccess(position) {
     Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
     console.log("gps success!!")
-    initMap(position);
 }
 
+function placeMarker(person) {
+    //TODO Inserire la propria posizione. Verificare che la posizione non sia NUL.
+    //TODO Aggiornare i valori degli amici
+    var latLng = new google.maps.LatLng(person.position.lat, person.position.lon);
+    var marker = new google.maps.Marker({
+        position: latLng,
+        map: map
+    })
+}
 
 function initMap(pos) {
     var infowindow = new google.maps.InfoWindow();
-    var map = new google.maps.Map(document.getElementById('map'), {
+    map = new google.maps.Map(document.getElementById('map'), {
         zoom: 6,
         center:{lat: 45, lng: 9}
     });
@@ -186,7 +180,7 @@ function initMap(pos) {
     console.log(Singleton.getInstance().position);
     console.log(Singleton.getInstance().session_id);
 
-    placeMarker(Singleton.getInstance());
+    // placeMarker(Singleton.getInstance());
 
     for(var i=0; i < people.length; i++) {
         placeMarker(people[i])
@@ -211,8 +205,9 @@ function watchMapPosition() {
 
 
 function postMessage() {
-    $("#dynamicBody").load("postMessage.html", function () {
+    $("#dynamicBody").load("html/postMessage.html", function () {
         $("#back").show();
+        getMapLocation();
         $("#submitPost").click(function () {
             var msg = $("#post").val();
             $.ajax({
