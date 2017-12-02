@@ -46,10 +46,10 @@ function receivedEvent(id) {
 
 
 function login () {
-    username = $("#inputUsername").val();
-    password = $("#inputPassword").val();
-    // var username = "giuse";
-    // var password = "bigs123qwert";
+    // username = $("#inputUsername").val();
+    // password = $("#inputPassword").val();
+    var username = "giuse";
+    var password = "bigs123qwert";
     console.log(username);2
     console.log(password);
     $.ajax({
@@ -109,16 +109,13 @@ function showAmiciSeguitiScreen(people) {
 
         })
         $(".list-group").html(riga);
+
         $("#mappa").hide();
         $("#bottone_lista").click(function() {
-            $("#bottone_mappa").removeClass("btn-primary").addClass("btn-default");
-            $("#bottone_lista").removeClass("btn-default").addClass("btn-primary");
             $("#mappa").hide();
             $("#lista").show();
         });
         $("#bottone_mappa").click(function() {
-            $("#bottone_lista").removeClass("btn-primary").addClass("btn-default");
-            $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
             $("#lista").hide();
             $("#mappa").show();
             google.maps.event.trigger(map, 'resize');

@@ -18,35 +18,37 @@
 </head>
 
 <body onload="onLoad()">
-    <div id="app">
-        <nav class="navbar navbar-inverse navbar-fixed-top" style="display: none">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                    </button>
-                    <a href="#" class="navbar-brand">
-                        <span id="back" onclick="loadPeople()" class="glyphicon glyphicon-menu-left" style="display: none"></span>
-                    </a>
-                    <a class="navbar-brand" href="#">GeoPost</a>
+<div id="app">
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="display: none">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="#" class="navbar-brand">
+                    <span id="back" onclick="loadPeople()" class="glyphicon glyphicon-menu-left" style="display: none"></span>
+                </a>
+                <a class="navbar-brand" href="#">GeoPost</a>
 
-                </div>
-                <div class="collapse navbar-collapse" id="myNavbar">
-                    <ul class="nav navbar-nav">
-                        <li class="active"><a href="#">Profile</a></li>
-                        <li><a onclick="postMessage()" href="#">Post Message</a></li>
-                        <li><a href="#">Maps</a></li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
-                        <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
-                        <li><a onclick="logout()" href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-                    </ul>
-                </div>
             </div>
+            <div class="collapse navbar-collapse" id="myNavbar">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" class="hidden-xs">Profile</a></li>
+                    <li><a href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Profile</a></li>
+                    <li><a href="#" class="hidden-xs">Update State</a></li>
+                    <li><a onclick="postMessage()" href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Update State</a></li>
+                    <li><a href="#" class="hidden-xs">Map</a></li>
+                    <li><a id="bottone_mappa" href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Map</a></li>
+                    <li><a href="#" class="hidden-xs">Friend</a></li>
+                    <li><a id="bottone_lista" href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Friend</a></li>
+                    <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
+                    <li><a onclick="logout()" href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                </ul>
+            </div>
+        </div>
         </nav>
-
         <div id="dynamicBody" class="container-fluid">
             <h2 class="form-signin-heading">GeoPost</h2>
             <label for="inputUsername" class="sr-only">Username</label>

@@ -29,10 +29,15 @@ function placeMarker(person) {
     //TODO Inserire la propria posizione. Verificare che la posizione non sia NUL.
     //TODO Aggiornare i valori degli amici
     var latLng = new google.maps.LatLng(person.position.lat, person.position.lon);
-    var marker = new google.maps.Marker({
+    var mark = {
         position: latLng,
-        map: map
-    })
+        map: map,
+        animation: google.maps.Animation.DROP
+    }
+    if (person.username == Singleton.getInstance().username)
+        mark.icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+
+    var marker = new google.maps.Marker(mark)
     google.maps.event.addListener(marker, 'click', function(){
         infowindow.close(); // Close previously opened infowindow
         infowindow.setContent( "<div id='infowindow'>"+ person.msg +"</div>");
@@ -40,15 +45,13 @@ function placeMarker(person) {
     });
 }
 
-function initMap(pos) {
+function initMap() {
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 6,
-        center:{lat: 45, lng: 9}
+        zoom: 8,
+        center:{lat: Singleton.getInstance().position.lat, lng: Singleton.getInstance().position.lon }
     });
-    console.log(Singleton.getInstance().username)
     console.log(Singleton.getInstance().position);
-    console.log(Singleton.getInstance().session_id);
 
     if (Singleton.getInstance().position != null)
         placeMarker(Singleton.getInstance());
