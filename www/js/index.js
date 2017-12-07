@@ -17,8 +17,8 @@
 * under the License.
 */
 
-//TODO Aggiungere Scroll View
-//TODO Modificare l'interfaccia grafica
+// TODO Sistemare logout
+//
 
 function onLoad() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -39,19 +39,20 @@ function onPause () {
 function receivedEvent(id) {
     console.log(id);
     //TODO Bug doppio click da risolvere.
-    $("#sub").one("click", function () {
+    $("#sub").click(function () {
         login()
     })
 }
 
 
 function login () {
-    // username = $("#inputUsername").val();
-    // password = $("#inputPassword").val();
-    var username = "giuse";
-    var password = "bigs123qwert";
+    username = $("#inputUsername").val();
+    password = $("#inputPassword").val();
+    // var username = "giuse";
+    // var password = "bigs123qwert";
     console.log(username);2
     console.log(password);
+    //TODO gestire gli errori login
     $.ajax({
         type: "POST",
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -83,6 +84,9 @@ function loadPeople() {
         url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + Singleton.getInstance().session_id,
         success: function (result) {
                 var people = result.followed;
+                people.forEach(function (person, index) {
+                    addPerson(person)
+                })
                 showAmiciSeguitiScreen(people);
         }
     })
@@ -97,7 +101,6 @@ function showAmiciSeguitiScreen(people) {
         var a = '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">';
         var d = '<div class="d-flex w-100 justify-content-between">';
         people.forEach(function (person, index) {
-            addPerson(person);
             riga += a + d;
             riga += '<h5 class="mb-1">' + person.username + '</h5>';
             riga += '</div>';
@@ -120,6 +123,7 @@ function showAmiciSeguitiScreen(people) {
             $("#mappa").show();
             google.maps.event.trigger(map, 'resize');
         });
+        getMapLocation();
         initMap();
     })
 }
@@ -140,7 +144,7 @@ function logout() {
 function postMessage() {
     $("#dynamicBody").load("html/postMessage.html", function () {
         $("#back").show();
-        getMapLocation();
+        $("#bottone_mappa").hide()
         $("#submitPost").click(function () {
             var msg = $("#post").val();
             $.ajax({

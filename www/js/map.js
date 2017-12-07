@@ -21,7 +21,7 @@ function gpsError(error, gpsOptions) {
 }
 
 function gpsSuccess(position) {
-    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
+    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude};
     console.log("gps success!!")
 }
 
@@ -40,7 +40,9 @@ function placeMarker(person) {
     var marker = new google.maps.Marker(mark)
     google.maps.event.addListener(marker, 'click', function(){
         infowindow.close(); // Close previously opened infowindow
-        infowindow.setContent( "<div id='infowindow'>"+ person.msg +"</div>");
+        infowindow.setContent(
+            '<h2 id="secondHeading" class="secondHeading">' + person.username + '</h2>' +
+            "<div id='infowindow'>"+ person.msg + "</div>" );
         infowindow.open(map, marker);
     });
 }
@@ -48,7 +50,7 @@ function placeMarker(person) {
 function initMap() {
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 8,
+        zoom: 4,
         center:{lat: Singleton.getInstance().position.lat, lng: Singleton.getInstance().position.lon }
     });
     console.log(Singleton.getInstance().position);
