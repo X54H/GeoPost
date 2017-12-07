@@ -34,15 +34,14 @@ function placeMarker(person) {
         map: map,
         animation: google.maps.Animation.DROP
     }
-    if (person.username == Singleton.getInstance().username)
-        mark.icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+    // mark.icon = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
 
     var marker = new google.maps.Marker(mark)
     google.maps.event.addListener(marker, 'click', function(){
         infowindow.close(); // Close previously opened infowindow
         infowindow.setContent(
-            '<h2 id="secondHeading" class="secondHeading">' + person.username + '</h2>' +
-            "<div id='infowindow'>"+ person.msg + "</div>" );
+            '<h4 id="secondHeading" class="secondHeading">' + person.username + '</h4>' +
+            "<div id='infowindow'>"+ person.status + "</div>" );
         infowindow.open(map, marker);
     });
 }
@@ -50,18 +49,13 @@ function placeMarker(person) {
 function initMap() {
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 4,
-        center:{lat: Singleton.getInstance().position.lat, lng: Singleton.getInstance().position.lon }
+        zoom: 2,
+        //TODO Capire dove centrare la mappa
+        center:{lat: 45.506488, lng:  9.185794}
     });
-    console.log(Singleton.getInstance().position);
 
-    if (Singleton.getInstance().position != null)
-        placeMarker(Singleton.getInstance());
-
-    for(var i=0; i < people.length; i++) {
-        placeMarker(people[i])
-    }
-
+    for(var i=0; i < SingletonFriendsList.getInstance().getFriendsList().length; i++)
+        placeMarker(SingletonFriendsList.getInstance().getFriendsList()[i])
 }
 
 function watchMapPosition() {

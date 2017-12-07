@@ -14,7 +14,7 @@ function FriendsList() {
     this.friends = []
 }
 
-FriendsList.prototype.getFriendList = function () {
+FriendsList.prototype.getFriendsList = function () {
     return this.friends;
 }
 
@@ -26,9 +26,9 @@ FriendsList.prototype.friendExists = function (username) {
     return -1
 }
 
-FriendsList.prototype.addFriend = function (username, status, lat, lon) {
-    var f = new Person(username, status, lat, lon);
-    if (this.friendExists(username) == -1)
+FriendsList.prototype.addFriend = function (person) {
+    var f = new Person(person.username, person.msg, person.lat, person.lon);
+    if (this.friendExists(person.username) == -1)
         this.friends.push(f)
 }
 
@@ -40,7 +40,7 @@ FriendsList.prototype.getFriendByUsername = function (username) {
 }
 
 FriendsList.prototype.sort = function (position) {
-    this.friends.forEach(function (friend, index) {
+    this.friends.forEach(function (friend) {
         friend.distance = getDistance(friend.position, position)
     })
     return this.friends.sort(function (friend1, friend2) {
@@ -69,8 +69,8 @@ var SingletonFriendsList = (function () {
     var instance;
 
     function createInstance() {
-        return Object.create(FriendsList);
-
+        var friendList = new FriendsList();
+        return friendList;
     }
 
     return {
@@ -87,7 +87,8 @@ var SingletonUser = (function () {
     var instance;
 
     function createInstance() {
-        return Object.create(User);
+        var user = new User();
+        return user;
 
     }
 
