@@ -10,6 +10,7 @@ function User(username, status, lat, lon, session_id) {
     this.session_id = session_id
 }
 
+
 function FriendsList() {
     this.friends = []
 }

@@ -2,7 +2,7 @@ var map;
 var infowindow;
 
 function getMapLocation() {
-    var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
+    var gpsOptions = {maximumAge: 300000, timeout: 1000, enableHighAccuracy: true};
     navigator.geolocation.getCurrentPosition
     (gpsSuccess, gpsError, gpsOptions);
 }
@@ -17,11 +17,13 @@ function gpsError(error, gpsOptions) {
     alert('code: '    + error.code    + "\n" +
         'message: ' + error.message + "\n" +
         "Attiva la geolocalizzazione per usare al meglio la tua app!");
+    SingletonUser.getInstance().position = null;
+    console.log("gps fail!!")
     gpsRetry(gpsOptions);
 }
 
 function gpsSuccess(position) {
-    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude};
+    SingletonUser.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude};
     console.log("gps success!!")
 }
 
