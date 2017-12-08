@@ -122,7 +122,7 @@ function showFollowedFriends() {
             $("#mappa").show();
             google.maps.event.trigger(map, 'resize');
         });
-        initMap();
+        initMap(SingletonFriendsList.getInstance().getFriendsList());
     })
 }
 
@@ -218,6 +218,10 @@ function getProfile() {
 
 function showProfile() {
     getProfile();
-    console.log(SingletonUser.getInstance())
+    console.log(SingletonUser.getInstance());
+    $("#dynamicBody").load("html/profile.html", function () {
+        initMap([SingletonUser.getInstance()]);
+    })
+
 }
 

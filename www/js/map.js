@@ -48,7 +48,7 @@ function placeMarker(person) {
     });
 }
 
-function initMap() {
+function initMap(personList) {
     infowindow = new google.maps.InfoWindow();
     map = new google.maps.Map(document.getElementById('map'), {
         zoom: 2,
@@ -56,8 +56,8 @@ function initMap() {
         center:{lat: 45.506488, lng:  9.185794}
     });
 
-    for(var i=0; i < SingletonFriendsList.getInstance().getFriendsList().length; i++)
-        placeMarker(SingletonFriendsList.getInstance().getFriendsList()[i])
+    for(var i=0; i < personList.length; i++)
+        placeMarker(personList[i])
 }
 
 function watchMapPosition() {
