@@ -2,7 +2,7 @@ var map;
 var infowindow;
 
 function getMapLocation() {
-    var gpsOptions = {maximumAge: 300000, timeout: 1000, enableHighAccuracy: true};
+    var gpsOptions = {maximumAge: 0, timeout: 1000, enableHighAccuracy: true};
     navigator.geolocation.getCurrentPosition
     (gpsSuccess, gpsError, gpsOptions);
 }

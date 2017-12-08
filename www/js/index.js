@@ -46,10 +46,10 @@ function receivedEvent(id) {
 
 
 function login () {
-    // username = $("#inputUsername").val();
-    // password = $("#inputPassword").val();
-    var username = "giuse";
-    var password = "bigs123qwert";
+    username = $("#inputUsername").val();
+    password = $("#inputPassword").val();
+    // var username = "giuse";
+    // var password = "bigs123qwert";
     console.log(username);2
     console.log(password);
     //TODO gestire gli errori login
@@ -146,11 +146,14 @@ function postMessage() {
         // } else {
         //     // Do nothing!
         // }
+        SingletonUser.getInstance().position = null;
         getMapLocation();
         $("#back").show();
         $("#bottone_mappa").hide()
         $("#submitPost").click(function () {
             var status = $("#post").val();
+
+
             if (SingletonUser.getInstance().position != null) {
                 $.ajax({
                     url: "https://ewserver.di.unimi.it/mobicomp/geopost/status_update?session_id="
@@ -185,11 +188,15 @@ function followFriend() {
                         url: 'https://ewserver.di.unimi.it/mobicomp/geopost/users?session_id='
                         + SingletonUser.getInstance().session_id + '&usernamestart=' + name
                         + "&limit=20",
-
                         success: function (result) {
-                            console.log(result);
+                            console.log(result.usernames);
+                            $(function () {
+                                var availableTags = result.usernames;
+                                $("#inputFriend" ).autocomplete({
+                                    source: availableTags
+                                });
+                            })
                         },
-
                         error: function(xhr, status, error) {
                             alert(xhr.responseText);
                         }
@@ -200,11 +207,13 @@ function followFriend() {
     );
 }
 
+
+
 function getProfile() {
     $.ajax({
         url: 'https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id=' + SingletonUser.getInstance().session_id,
         success: function (user) {
-            // console.log(user);
+            console.log(user);
             SingletonUser.getInstance().username = user.username;
             SingletonUser.getInstance().status = user.msg;
             SingletonUser.getInstance().position = {'lat' : user.lat, 'lon' : user.lon}
