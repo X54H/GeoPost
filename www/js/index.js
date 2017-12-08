@@ -203,6 +203,19 @@ function followFriend() {
                     })
                 }
             )
+            $("#followFriend").click(function () {
+                var name = $("#inputFriend").val();
+                $.ajax({
+                    url: 'https://ewserver.di.unimi.it/mobicomp/geopost/follow?session_id=' +
+                    SingletonUser.getInstance().session_id + '&username=' + name,
+                    success: function (result) {
+                        alert(result);
+                    },
+                    error: function(xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                })
+            })
         }
     );
 }
