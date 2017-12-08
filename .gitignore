@@ -30,3 +30,7 @@ platforms/wp8/*.csproj.user
 
 # res
 resources/signing
+
+platforms/android/.gradle
+
+.idea
