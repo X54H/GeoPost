@@ -19,41 +19,35 @@
 
 </head>
 
+
 <body onload="onLoad()">
+
 <div id="app">
     <nav class="navbar navbar-inverse navbar-fixed-top" style="display: none">
         <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a href="#" class="navbar-brand">
-                    <span id="back" onclick="loadFriends()" class="glyphicon glyphicon-menu-left" style="display: none"></span>
+                <a id="setting" class="navbar-brand" href="#">
+                    <span  class="glyphicon glyphicon-menu-hamburger" onclick="openNav();"></span>
+                </a>
+                <a id="back" class="navbar-brand" href="#" style="display: none;">
+                    <span onclick="loadFriends()" class="glyphicon glyphicon-menu-left"></span>
                 </a>
                 <a class="navbar-brand" href="#">GeoPost</a>
-
-            </div>
-            <div class="collapse navbar-collapse" id="myNavbar">
-                <ul class="nav navbar-nav">
-                    <li><a href="#" class="hidden-xs">Profile</a></li>
-                    <li><a href="#" onclick="showProfile()" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Profile</a></li>
-                    <li><a href="#" class="hidden-xs">Follow Friend</a></li>
-                    <li><a href="#" onclick="followFriend()" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Follow Friend</a></li>
-                    <li><a href="#" class="hidden-xs">Update State</a></li>
-                    <li><a onclick="postMessage()" href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Update State</a></li>
-                    <li><a href="#" class="hidden-xs">Show Map</a></li>
-                    <li><a id="bottone_mappa" href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Show Map</a></li>
-                    <li><a href="#" class="hidden-xs">Show List</a></li>
-                    <li><a id="bottone_lista"onclick="showFollowedFriends()" href="#" class="visible-xs" data-toggle="collapse" data-target=".navbar-collapse">Show List</a></li>
-                    <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>-->
-                    <li><a onclick="logout()" href="#"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-                </ul>
             </div>
         </div>
-        </nav>
-        <div id="dynamicBody" class="container-fluid">
+    </nav>
+
+    <div id="mySidenav" class="sidenav" style="padding-top: 50px">
+        <a href="javascript:void(0)"  class="closebtn" onclick="closeNav()" style="padding-top: 50px" >&times;</a>
+        <a href="#" onclick="showProfile();">Profile</a>
+        <a href="#" onclick="postMessage();">Update Stats</a>
+        <a href="#" onclick="followFriend();">Find Friend</a>
+        <a href="#" id="bottone_lista" onclick="showFollowedFriends();">Friends</a>
+        <a href="#" id="bottone_mappa">Map</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+
+    <div id="dynamicBody" class="container-fluid">
             <h2 class="form-signin-heading">GeoPost</h2>
             <label for="inputUsername" class="sr-only">Username</label>
             <input type="username" id="inputUsername" class="form-control" placeholder="Username" required autofocus>

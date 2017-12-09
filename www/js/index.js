@@ -38,6 +38,7 @@ function onPause () {
 // Update DOM on a Received Event
 function receivedEvent(id) {
     console.log(id);
+    console.log(StatusBar);
     //TODO Bug doppio click da risolvere.
     $("#sub").click(function () {
         login()
@@ -50,7 +51,7 @@ function login () {
     password = $("#inputPassword").val();
     // var username = "giuse";
     // var password = "bigs123qwert";
-    console.log(username);2
+    console.log(username);
     console.log(password);
     //TODO gestire gli errori login
     $.ajax({
@@ -92,9 +93,9 @@ function loadFriends() {
 
 
 function showFollowedFriends() {
+    showSettingHideback();
     var riga = "";
     console.log(SingletonFriendsList.getInstance().getFriendsList());
-    $("#back").hide();
     $("nav").show()
     $("#dynamicBody").load("html/followedFriends.html", function () {
         var a = '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">';
@@ -140,6 +141,7 @@ function logout() {
 
 
 function postMessage() {
+    showBackHidesetting();
     $("#dynamicBody").load("html/postMessage.html", function () {
         // if (confirm('Are you sure you want to save this thing into the database?')) {
         //     // Save it!
@@ -148,8 +150,6 @@ function postMessage() {
         // }
         SingletonUser.getInstance().position = null;
         getMapLocation();
-        $("#back").show();
-        $("#bottone_mappa").hide()
         $("#submitPost").click(function () {
             var status = $("#post").val();
 
@@ -176,7 +176,7 @@ function postMessage() {
 }
 
 function followFriend() {
-    $("#back").show();
+    showBackHidesetting();
     $("#dynamicBody").load("html/followFriend.html",
         function () {
             $("#inputFriend").keyup(
@@ -239,11 +239,30 @@ function getProfile() {
 }
 
 function showProfile() {
+    showBackHidesetting();
     getProfile();
     console.log(SingletonUser.getInstance());
     $("#dynamicBody").load("html/profile.html", function () {
         initMap([SingletonUser.getInstance()]);
     })
-
 }
 
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
+
+function showBackHidesetting() {
+    closeNav();
+    $("#setting").hide();
+    $("#back").show();
+}
+
+function showSettingHideback() {
+    closeNav();
+    $("#setting").show();
+    $("#back").hide();
+}

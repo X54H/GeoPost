@@ -30,4 +30,5 @@
     <plugin name="cordova-plugin-geolocation" spec="^3.0.0">
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="GeoPost need you position" />
     </plugin>
+    <plugin name="cordova-plugin-statusbar" spec="^2.3.0" />
 </widget>

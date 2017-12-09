@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		0207DA581B56EA530066E2B4 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0207DA571B56EA530066E2B4 /* Images.xcassets */; };
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
@@ -16,6 +15,7 @@
 		6AFF5BF91D6E424B00AB3073 /* CDVLaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6AFF5BF81D6E424B00AB3073 /* CDVLaunchScreen.storyboard */; };
 		BA094DCF56884557977C330E /* CDVLocation.m in Sources */ = {isa = PBXBuildFile; fileRef = 8430F540FBEE42658176090D /* CDVLocation.m */; };
 		C350AE2B88D14C6C9BEBF107 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0274F745B0084196A91BA803 /* CoreLocation.framework */; };
+		237531D5091E49799D90FA61 /* CDVStatusBar.m in Sources */ = {isa = PBXBuildFile; fileRef = BD5EBC98F5954710893F7FC4 /* CDVStatusBar.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +66,8 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		ED33DF2A687741AEAF9F8254 /* Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Bridging-Header.h"; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = HelloCordova/config.xml; sourceTree = "<group>"; };
+		BD5EBC98F5954710893F7FC4 /* CDVStatusBar.m */ = {isa = PBXFileReference; name = "CDVStatusBar.m"; path = "cordova-plugin-statusbar/CDVStatusBar.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		562EB1FC09B6419A8055263C /* CDVStatusBar.h */ = {isa = PBXFileReference; name = "CDVStatusBar.h"; path = "cordova-plugin-statusbar/CDVStatusBar.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +176,8 @@
 			children = (
 				8430F540FBEE42658176090D /* CDVLocation.m */,
 				04A68A5F229C4287BDA57DB8 /* CDVLocation.h */,
+				BD5EBC98F5954710893F7FC4 /* CDVStatusBar.m */,
+				562EB1FC09B6419A8055263C /* CDVStatusBar.h */,
 			);
 			name = Plugins;
 			path = HelloCordova/Plugins;
@@ -302,6 +306,7 @@
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
 				BA094DCF56884557977C330E /* CDVLocation.m in Sources */,
+				237531D5091E49799D90FA61 /* CDVStatusBar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,7 +341,7 @@
 				INFOPLIST_FILE = "HelloCordova/HelloCordova-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = giuse.GeoPost.it;
+				PRODUCT_BUNDLE_IDENTIFIER = io.cordova.geopost;
 				PRODUCT_NAME = HelloCordova;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -360,7 +365,7 @@
 				INFOPLIST_FILE = "HelloCordova/HelloCordova-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = giuse.GeoPost.it;
+				PRODUCT_BUNDLE_IDENTIFIER = io.cordova.geopost;
 				PRODUCT_NAME = HelloCordova;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

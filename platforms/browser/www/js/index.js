@@ -17,17 +17,8 @@
 * under the License.
 */
 
-//TODO Aggiungere Scroll View
-
-var people = []
-var map;
-
-
-function Person(username, msg, lat, lon) {
-    this.username = username;
-    this.msg = msg
-    this.position = {'lat' : Number(lat),  'lon' : Number(lon)}
-}
+// TODO Sistemare logout
+// TODO Handling Errors
 
 function onLoad() {
     document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
@@ -48,19 +39,20 @@ function onPause () {
 function receivedEvent(id) {
     console.log(id);
     //TODO Bug doppio click da risolvere.
-    $("#sub").one("click", function () {
+    $("#sub").click(function () {
         login()
     })
 }
 
 
 function login () {
-    // username = $("#inputUsername").val();
-    // password = $("#inputPassword").val();
-    var username = "giuse";
-    var password = "bigs123qwert";
+    username = $("#inputUsername").val();
+    password = $("#inputPassword").val();
+    // var username = "giuse";
+    // var password = "bigs123qwert";
     console.log(username);2
     console.log(password);
+    //TODO gestire gli errori login
     $.ajax({
         type: "POST",
         contentType: "application/x-www-form-urlencoded; charset=UTF-8",
@@ -73,43 +65,45 @@ function login () {
             console.log(xhr.statusText);
             console.log(textStatus);
             console.log(error);
+
         },
         success: function(session_id){
             console.log(session_id);
-            console.log(Singleton.getInstance().username);
-            console.log(Singleton.getInstance().position);
-            console.log(Singleton.getInstance().username = username);
-            console.log(Singleton.getInstance().session_id = session_id);
-            console.log(Singleton.getInstance().position = null);
-            loadPeople();
+            SingletonUser.getInstance().session_id = session_id;
+            getProfile();
+            loadFriends();
         }
     });
 }
 
-function loadPeople() {
+function loadFriends() {
     $.ajax({
-        url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + Singleton.getInstance().session_id,
+        url: "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id=" + SingletonUser.getInstance()
+            .session_id,
         success: function (result) {
                 var people = result.followed;
-                showAmiciSeguitiScreen(people);
+                people.forEach(function (person) {
+                    SingletonFriendsList.getInstance().addFriend(person);
+                })
+                showFollowedFriends();
         }
     })
 }
 
 
-function showAmiciSeguitiScreen(people) {
+function showFollowedFriends() {
+    showSettingHideback();
     var riga = "";
-    $("#back").hide();
+    console.log(SingletonFriendsList.getInstance().getFriendsList());
     $("nav").show()
     $("#dynamicBody").load("html/followedFriends.html", function () {
         var a = '<a href="#" class="list-group-item list-group-item-action flex-column align-items-start">';
         var d = '<div class="d-flex w-100 justify-content-between">';
-        people.forEach(function (person, index) {
-            addPerson(person);
+        SingletonFriendsList.getInstance().getFriendsList().forEach(function (person) {
             riga += a + d;
             riga += '<h5 class="mb-1">' + person.username + '</h5>';
             riga += '</div>';
-            if (person.msg != null) riga += '<p class="mb-1">' + person.msg + '</p>';
+            if (person.status != null) riga += '<p class="mb-1">' + person.status + '</p>';
             riga += '<small style="position: absolute;\n' +
                 'top: 12px;\n' +
                 'right: 16px;">15 km</small>'
@@ -117,72 +111,26 @@ function showAmiciSeguitiScreen(people) {
 
         })
         $(".list-group").html(riga);
+
         $("#mappa").hide();
         $("#bottone_lista").click(function() {
-            $("#bottone_mappa").removeClass("btn-primary").addClass("btn-default");
-            $("#bottone_lista").removeClass("btn-default").addClass("btn-primary");
             $("#mappa").hide();
             $("#lista").show();
         });
         $("#bottone_mappa").click(function() {
-            $("#bottone_lista").removeClass("btn-primary").addClass("btn-default");
-            $("#bottone_mappa").removeClass("btn-default").addClass("btn-primary");
             $("#lista").hide();
             $("#mappa").show();
             google.maps.event.trigger(map, 'resize');
         });
-        initMap();
+        initMap(SingletonFriendsList.getInstance().getFriendsList());
     })
 }
 
 
-function getMapLocation() {
-    var gpsOptions = {maximumAge: 300000, timeout: 5000, enableHighAccuracy: true};
-    navigator.geolocation.getCurrentPosition
-    (gpsSuccess, gpsError, gpsOptions);
-}
-
-function gpsRetry(gpsOptions) {
-    navigator.geolocation.getCurrentPosition(gpsSuccess, gpsError, gpsOptions);
-}
-
-// onError Callback receives a PositionError object
-//
-function gpsError(error, gpsOptions) {
-    alert('code: '    + error.code    + "\n" +
-        'message: ' + error.message + "\n" +
-        "Attiva la geolocalizzazione per usare al meglio la tua app!");
-    gpsRetry(gpsOptions);
-}
-
-function gpsSuccess(position) {
-    Singleton.getInstance().position = {'lat' : position.coords.latitude, 'lon' : position.coords.longitude}
-    console.log("gps success!!")
-    initMap(position);
-}
-
-
-function initMap(pos) {
-    var infowindow = new google.maps.InfoWindow();
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 6,
-        center:{lat: 45, lng: 9}
-    });
-    console.log(Singleton.getInstance().username)
-    console.log(Singleton.getInstance().position);
-    console.log(Singleton.getInstance().session_id);
-
-    placeMarker(Singleton.getInstance());
-
-    for(var i=0; i < people.length; i++) {
-        placeMarker(people[i])
-    }
-
-}
 
 function logout() {
     $.ajax({
-        url: "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id=" + Singleton.getInstance().session_id,
+        url: "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id=" + SingletonUser.getInstance().session_id,
         success: function (result) {
             console.log("logout eseguito!");
             window.location.href = "index.html"
@@ -190,35 +138,131 @@ function logout() {
     })
 }
 
-function watchMapPosition() {
-    return navigator.geolocation.watchPosition
-    (onMapWatchSuccess, onMapError, { enableHighAccuracy: true });
-}
-
 
 function postMessage() {
-    $("#dynamicBody").load("postMessage.html", function () {
-        $("#back").show();
+    showBackHidesetting();
+    $("#dynamicBody").load("html/postMessage.html", function () {
+        // if (confirm('Are you sure you want to save this thing into the database?')) {
+        //     // Save it!
+        // } else {
+        //     // Do nothing!
+        // }
+        SingletonUser.getInstance().position = null;
+        getMapLocation();
+        $("#bottone_mappa").hide()
         $("#submitPost").click(function () {
-            var msg = $("#post").val();
-            $.ajax({
-                url: "https://ewserver.di.unimi.it/mobicomp/geopost/status_update?session_id="
-                + Singleton.getInstance().session_id + "&message=" + msg + "&lat=" + Singleton.getInstance().position.lat
-                + "&lon=" + Singleton.getInstance().position.lon,
+            var status = $("#post").val();
 
-                success: function (result) {
-                    console.log("Messaggio postato! with resul=" + result);
-                    console.log(" " + msg)
-                    Singleton.getInstance().msg = msg;
-                    alert("Your state is updated! Thank you!")
-                }
-            })
+
+            if (SingletonUser.getInstance().position != null) {
+                $.ajax({
+                    url: "https://ewserver.di.unimi.it/mobicomp/geopost/status_update?session_id="
+                    + SingletonUser.getInstance().session_id + "&message=" + status + "&lat=" + SingletonUser.getInstance().position.lat
+                    + "&lon=" + SingletonUser.getInstance().position.lon,
+
+                    success: function (result) {
+                        console.log("Messaggio postato! with result=" + result);
+                        console.log(" " + status)
+                        SingletonUser.getInstance().status = status;
+                        alert("Your state is updated! Thank you!")
+                    }
+                })
+            }
+            else {
+                alert("I can't update you status! I don't know where you are! ")
+            }
         })
     })
 }
 
-//     <h1>Apache Cordova</h1>
-// <div id="deviceready" class="blink">
-//     <p class="event listening">Connecting to Device</p>
-// <p class="event received">Device is Ready</p>
-// </div>
+function followFriend() {
+    showBackHidesetting();
+    $("#dynamicBody").load("html/followFriend.html",
+        function () {
+            $("#inputFriend").keyup(
+                //TODO autocomplete
+                function () {
+                    var name = $("#inputFriend").val();
+                    console.log(name);
+                    $.ajax({
+                        url: 'https://ewserver.di.unimi.it/mobicomp/geopost/users?session_id='
+                        + SingletonUser.getInstance().session_id + '&usernamestart=' + name
+                        + "&limit=20",
+                        success: function (result) {
+                            console.log(result.usernames);
+                            $(function () {
+                                var availableTags = result.usernames;
+                                $("#inputFriend" ).autocomplete({
+                                    source: availableTags
+                                });
+                            })
+                        },
+                        error: function(xhr, status, error) {
+                            alert(xhr.responseText);
+                        }
+                    })
+                }
+            )
+            $("#followFriend").click(function () {
+                var name = $("#inputFriend").val();
+                $.ajax({
+                    url: 'https://ewserver.di.unimi.it/mobicomp/geopost/follow?session_id=' +
+                    SingletonUser.getInstance().session_id + '&username=' + name,
+                    success: function (result) {
+                        alert(result);
+                    },
+                    error: function(xhr, status, error) {
+                        alert(xhr.responseText);
+                    }
+                })
+            })
+        }
+    );
+}
+
+
+
+function getProfile() {
+    $.ajax({
+        url: 'https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id=' + SingletonUser.getInstance().session_id,
+        success: function (user) {
+            console.log(user);
+            SingletonUser.getInstance().username = user.username;
+            SingletonUser.getInstance().status = user.msg;
+            SingletonUser.getInstance().position = {'lat' : user.lat, 'lon' : user.lon}
+        },
+
+        error: function(xhr, status, error) {
+            alert(xhr.responseText);
+        }
+    })
+}
+
+function showProfile() {
+    showBackHidesetting();
+    getProfile();
+    console.log(SingletonUser.getInstance());
+    $("#dynamicBody").load("html/profile.html", function () {
+        initMap([SingletonUser.getInstance()]);
+    })
+}
+
+function openNav() {
+    document.getElementById("mySidenav").style.width = "250px";
+}
+
+function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+}
+
+function showBackHidesetting() {
+    closeNav();
+    $("#setting").hide();
+    $("#back").show();
+}
+
+function showSettingHideback() {
+    closeNav();
+    $("#setting").show();
+    $("#back").hide();
+}
